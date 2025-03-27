@@ -1,0 +1,13 @@
+# AE Script Utils
+
+一些用于 AE 脚本的通用函数，单独分出一个项目以方便管理和更新。
+
+## 依赖
+
+运行此项目需要依赖 [Soil](https://github.com/RaymondClr/Soil)。
+
+## 安装
+
+如果想要使用我的函数，可以将此项目 clone 到本地，并运行以下命令来安装依赖：
+
+npm i soil-ts
