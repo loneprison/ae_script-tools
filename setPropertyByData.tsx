@@ -10,7 +10,7 @@ function setPropertyValueByData(property: Property, dataObject: PropertyValueDat
             const objectValue = dataObject.value;
             const objValue = property.value;
             _.forOwn(objectValue, (value, key) => {
-                if (value) {
+                if (value && _.has(objValue, key)) {
                     objValue[key] = value;
                 }
             });
@@ -21,7 +21,7 @@ function setPropertyValueByData(property: Property, dataObject: PropertyValueDat
     }
 
     // 设置表达式
-    if (_.has(dataObject, 'expression')) {
+    if (_.isString(dataObject.expression)) {
         property.expression = dataObject.expression;
     }
 }
@@ -38,7 +38,7 @@ function setSelfProperty(property: _PropertyClasses, dataObject: PropertyMetadat
 
     // 设置并删除属性函数
     const setAndDelete = (property_: _PropertyClasses, key: string) => {
-        if (_.has(dataObject, key)) {
+        if (_.has(dataObject, key) && _.has(property_, key)) {
             property_[key] = dataObject[key];
             delete dataObject[key];
         }
@@ -49,7 +49,13 @@ function setSelfProperty(property: _PropertyClasses, dataObject: PropertyMetadat
         let layerData = dataObject as RasterLayerMetadata; // 因为浅拷贝所以layerData实际上还是dataObject的引用，不过这样写在ts中可以更好的提示类型
 
         // 由于锁定会影响到属性的设置，因此需要先解锁
-        let locked: boolean = _.has(layerData, 'locked') ? layerData.locked : layer.locked;
+        let locked: boolean;
+        if (_.has(layerData, 'locked')) {
+            locked = layerData.locked ?? false;
+        } else {
+            locked = layer.locked;
+        }
+
         delete layerData.locked;
         layer.locked = false;
 
@@ -110,7 +116,9 @@ function setPropertyByData(rootProperty: _PropertyClasses, propertyData: Propert
 
         // 如果当前是一个 Group（包含子项）
         if (_.startsWith(key, 'G', 0)) {
+            if(_.isPropertyGroup(subProperty)) {
             setPropertyByData(subProperty, value as PropertyDataStructure);
+            }
         } else if (_.startsWith(key, 'P', 0)) {
             if (_.isProperty(subProperty)) {
                 setPropertyValueByData(subProperty, value as PropertyValueData);

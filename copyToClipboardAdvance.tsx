@@ -11,7 +11,7 @@
  * @example
  */
 
-function copyToClipboardAdvance(text) {
+function copyToClipboardAdvance(text:any) {
     let tempFile = new File(Folder.temp.fullName + '/temp.txt');
     tempFile.open('w');
     tempFile.encoding = 'UTF-8';

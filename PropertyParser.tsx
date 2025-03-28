@@ -73,8 +73,9 @@ class PropertyParser {
                 excludeTransformKey = /ADBE Position_\d+/;
             }
             _.forOwn(transformData[transformKey], (value, key) => {
-                if (excludeTransformKey.test(key))
-                    delete transformData[transformKey][key];
+                if (excludeTransformKey.test(key) && _.has(transformData[transformKey], key)) {
+                    delete transformData[transformKey][key]
+                }
             });
 
             if (!_.isEmpty(transformData)) {
@@ -180,7 +181,7 @@ class PropertyParser {
     private processTimeRemapping(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
         if (_.isAVLayer(layer)) {
             if (_.indexOf(this.readProperty, "TimeRemapping") !== -1 &&
-                layer.canSetTimeRemapEnabled && 
+                layer.canSetTimeRemapEnabled &&
                 layer.timeRemapEnabled) {
                 data = {
                     ...data,
@@ -195,7 +196,7 @@ class PropertyParser {
         if (_.isTextLayer(layer)) {
             if (_.indexOf(this.readProperty, "TextProperties") !== -1) {
                 let textObject = manualGetRootPropertyData(layer.text);
-                let textDocument = textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] as PropertyValueData;
+                let textDocument = ((textObject['G0002 ADBE Text Properties'] as PropertyDataStructure)?.['P0001 ADBE Text Document'] as PropertyValueData) || {};
                 if (textDocument.value) {
                     textDocument.value = getTextDocumentValue(textDocument.value);
                 } else if (textDocument.Keyframe) {
@@ -203,7 +204,7 @@ class PropertyParser {
                         Keyframe.keyValue = getTextDocumentValue(Keyframe.keyValue);
                     });
                 }
-                textObject['G0002 ADBE Text Properties']['P0001 ADBE Text Document'] = textDocument;
+                (textObject['G0002 ADBE Text Properties'] as PropertyDataStructure)['P0001 ADBE Text Document'] = textDocument;
 
                 data = { ...data, ...textObject };
             }
@@ -214,7 +215,10 @@ class PropertyParser {
     private processVectorsGroup(layer: RasterLayer, data: PropertyDataStructure): PropertyDataStructure {
         if (_.isShapeLayer(layer)) {
             if (_.indexOf(this.readProperty, "VectorsGroup") !== -1) {
-                data = { ...data, ...manualGetRootPropertyData(_.getProperty(layer, ["ADBE Root Vectors Group"])) };
+                const vectorsGroup = _.getProperty(layer, ["ADBE Root Vectors Group"])
+                if(_.isPropertyGroup(vectorsGroup)) {
+                data = { ...data, ...manualGetRootPropertyData(vectorsGroup) };
+                }
             }
         }
         return data;
@@ -274,6 +278,7 @@ function getLayerDataOld(layer: Layer): PropertyDataStructure {
 
     for (let i = 1; i <= layer.numProperties; i++) {
         const property = _.getProperty(layer, [i]);
+        if(!property) continue
         const propertyData = processProperty(property, i);
         data = { ...data, ...propertyData };
     }
@@ -335,6 +340,7 @@ function getPropertyGroupData(propertyGroup: PropertyGroup): PropertyDataStructu
     for (let i = 1; i <= propertyGroup.numProperties; i++) {
         const property = _.getProperty(propertyGroup, [i]);
         // 递归处理属性
+        if (!property) continue
         const propertyData = processProperty(property, i);
         // 合并属性数据
         data = { ...data, ...propertyData };

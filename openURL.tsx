@@ -4,7 +4,7 @@
  * @param {string} url - 要打开的网页链接。
  * @returns {void}
  */
-function openURL(url) {
+function openURL(url:string) {
     if (!url || typeof url !== "string") {
         alert("Invalid URL.");
         return;
