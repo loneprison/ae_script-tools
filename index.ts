@@ -10,9 +10,13 @@ export { default as getBlendingModeByName } from './getBlendingModeByName';
 
 export { default as getBoundsByLayers } from './getBoundsByLayers';
 
+export { default as getItemByPath } from './getItemByPath';
+
 export { default as getTextDocumentValue } from './getTextDocumentValue';
 
 export { default as getTrackMatteTypeByName } from './getTrackMatteTypeByName';
+
+export { default as openURL } from './openURL';
 
 export { getRootPropertyData, getLayerDataOld } from './PropertyParser';
 
