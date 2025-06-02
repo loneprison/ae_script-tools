@@ -20,6 +20,8 @@ export { default as openURL } from './openURL';
 
 export { getRootPropertyData, getLayerDataOld } from './PropertyParser';
 
+export { default as readTextFile } from './readTextFile';
+
 export { default as setPropertyByData } from './setPropertyByData';
 
 export { default as sortLayersByIndex } from './sortLayersByIndex';
