@@ -1,27 +1,25 @@
 import * as _ from 'soil-ts';
 
 function mergeTwoBounds(current: RectBounds, newBounds: RectBounds): RectBounds {
-    const [currMinX, currMinY, currMaxX, currMaxY] = current;
-    const [newMinX, newMinY, newMaxX, newMaxY] = newBounds;
-    return [
-        Math.min(currMinX, newMinX),
-        Math.min(currMinY, newMinY),
-        Math.max(currMaxX, newMaxX),
-        Math.max(currMaxY, newMaxY),
-    ];
+    return {
+        left: Math.min(current.left, newBounds.left),
+        top: Math.min(current.top, newBounds.top),
+        width: Math.max(current.left + current.width, newBounds.left + newBounds.width) - Math.min(current.left, newBounds.left),
+        height: Math.max(current.top + current.height, newBounds.top + newBounds.height) - Math.min(current.top, newBounds.top),
+    };
 }
 
 function getBoundsByLayer(layer: Layer): RectBounds {
-    if (!_.isAVLayer(layer)) return [0, 0, 0, 0];
+    if (!_.isAVLayer(layer)) return { left: 0, top: 0, width: 0, height: 0 };
 
     const { width, height } = layer;
     const vertices: TwoDPoint[] = [[0, 0], [width, 0], [width, height], [0, height]];
 
-    const initialBounds: RectBounds = [Infinity, Infinity, -Infinity, -Infinity];
+    const initialBounds: RectBounds = { left: Infinity, top: Infinity, width: -Infinity, height: -Infinity };
     return _.reduce(
         _.map(vertices, v => {
             const [x, y] = layer.sourcePointToComp(v);
-            return [x, y, x, y] as RectBounds;
+            return { left: x, top: y, width: 0, height: 0 };
         }),
         (currentBounds, pointBounds) => mergeTwoBounds(currentBounds, pointBounds),
         initialBounds
@@ -36,7 +34,7 @@ function mergeBounds(boundsList: RectBounds[]): RectBounds {
     return _.reduce(
         boundsList,
         (currentBounds, newBounds) => mergeTwoBounds(currentBounds, newBounds),
-        [Infinity, Infinity, -Infinity, -Infinity] as RectBounds
+        { left: Infinity, top: Infinity, width: -Infinity, height: -Infinity }
     );
 }
 

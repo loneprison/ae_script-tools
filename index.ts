@@ -1,5 +1,7 @@
 export { default as addAdjustmentLayer } from './addAdjustmentLayer';
 
+export { default as ats_getBoundsByLayer } from './ats/ats_getBoundsByLayer';
+
 export { default as copyToClipboard } from './copyToClipboard';
 
 export { default as copyToClipboardAdvance } from './copyToClipboardAdvance';

@@ -428,12 +428,17 @@ type canSetTextDocumentData = {
 
 
 /**
- * 表示矩形的边界，使用四个数字的元组表示。
+ * 表示矩形的边界。
  * 
- * @typeParam [number, number, number, number] - 元组包含以下内容：
- * - 矩形左边的 x 坐标。
- * - 矩形顶部的 y 坐标。
- * - 矩形右边的 x 坐标。
- * - 矩形底部的 y 坐标。
+ * 使用对象字面量表示矩形的位置和大小，包含以下属性：
+ * - `left`: 矩形左边的 x 坐标。
+ * - `top`: 矩形顶部的 y 坐标。
+ * - `width`: 矩形的宽度。
+ * - `height`: 矩形的高度。
  */
-type RectBounds = [number, number, number, number];
+type RectBounds = {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+};
